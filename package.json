@@ -14,11 +14,17 @@
 
   "dependencies": {
 
+    "bcrypt": "^6.0.0",
+
+    "bcryptjs": "^3.0.3",
+
     "chalk": "^5.6.2",
 
     "Commander": "npm:commander@^14.0.2",
 
     "dotenv": "^17.2.3",
+
+    "inquirer": "^13.1.0",
 
     "mongoose": "^9.1.2"
 
@@ -26,9 +32,13 @@
 
   "devDependencies": {
 
+    "@types/bcryptjs": "^2.4.6",
+
     "@types/chalk": "^0.4.31",
 
     "@types/commander": "^2.12.0",
+
+    "@types/express": "^5.0.6",
 
     "@types/fs-extra": "^11.0.4",
 

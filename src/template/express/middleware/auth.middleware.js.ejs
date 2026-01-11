@@ -1,0 +1,50 @@
+import {Authnticator} from '../utils/jwt.<%= ext %>'
+if (!process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET is not defined");
+}
+const JWT_SECRET = process.env.JWT_SECRET;
+
+
+
+
+export default async function AuthMiddleware(req , res , next){
+    try {
+        const token = extractToken(req)
+        if(!token) return res.status(401).json({
+            message : "Token is missing"
+        });
+        const response = await Authnticator({
+            token
+        })
+
+        if(!response.success){
+            return res.status(403).json({
+                message : response.message,
+                error : response.error || "Internal server error"
+            });
+        };
+
+        req.user = response.user;
+        next();
+        
+    } catch (error) {
+        return res.status(500).json({
+            message : "Internal server error !!!",
+            error : error.message || error
+        });
+    }
+}
+
+
+function extractToken(req) {
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith("Bearer ")) {
+    return authHeader.split(" ")[1];
+  }
+
+  if (req.cookies?.accessToken) {
+    return req.cookies.accessToken;
+  }
+
+  return null;
+}
