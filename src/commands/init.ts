@@ -3,6 +3,7 @@ import { ContextBuilder } from "../cli/context.ts";
 import { BuildFilePlan } from "../core/planner.ts";
 import type { GenerationPlan } from "../adapters/adapter.interface.ts";
 import ConflictResolver from "../core/confilict-resolver.ts";
+import Executor from "../core/executor.ts";
 
 export type commanderOption = {
     framework :  string,
@@ -37,7 +38,8 @@ export default async function INIT(options : commanderOption){
 
         const planBuild = BuildFilePlan(context , context.adapter?.mapAuth(context.authType as string) as GenerationPlan);
         const conflictsResolvedPlan =  await ConflictResolver(planBuild);
-
+        Executor(conflictsResolvedPlan , context);
+        console.log(chalk.whiteBright.bold("Auth Creation completed !!!"));
     } catch (error : any) {
         console.log(chalk.red("💀 Something is really wrong !!!"));
         console.log(chalk.yellowBright(error.message || error))

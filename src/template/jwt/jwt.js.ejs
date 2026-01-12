@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import mongoose from 'mongoose'
 
-import <%= userModel %> from ../model/<%= userModel %>.<%= ext %>
+import <%= userModel %> from "../model/<%= userModel %>.<%= ext %>"
 
 if(!process.env.JWT_SECRET) {
   throw new Error("JWT_SECRET is not defined");
