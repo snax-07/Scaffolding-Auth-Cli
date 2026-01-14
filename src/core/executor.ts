@@ -17,7 +17,7 @@ export default async function Executor(
         console.log(chalk.bold.whiteBright(`✅ File successfully created !!!`));
         for(const sPlan of plan){
             if(!fs.existsSync(sPlan.outputPath) || sPlan.overwrite){
-                const content = RenderTemplate(sPlan.templatePath, context);
+                const content =fs.readFileSync(sPlan.templatePath).toString();
                 WriteFile(content , sPlan.outputPath);
                 continue;
             }

@@ -1,0 +1,187 @@
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
+import dbConnect from '../config/dbConnect.js';
+import User from '../models/userModel.js';
+import bcrypt from 'bcryptjs';
+
+const TOKEN_EXPIRY = process.env.TOKEN_EXPIRY || '15m';
+const RTOKEN_EXPIRY = process.env.RTOKEN_EXPIRY || '7d';
+const COOKIE_EXPIRY = process.env.COOKIE_EXPIRY || 30 * 24 * 60 * 60 * 1000; // 30 days
+
+// In-memory storage for demo; use Redis/DB for production
+const blackListedUserToken = [];
+const validRefreshTokens = {}; // key = userId, value = array of active refresh token jtis
+export const csrfSecrets = {}; // key = session/jti, value = CSRF token
+
+// ================= Helper Functions =================
+
+export const generateToken = (userId) => {
+  const jti = crypto.randomUUID();
+
+  const accessToken = jwt.sign(
+    { sub: userId, jti },
+    process.env.JWT_SECRET,
+    {
+      algorithm: 'HS256',
+      expiresIn: TOKEN_EXPIRY,
+      issuer: 'AUTOMA',
+    }
+  );
+
+  const refreshToken = jwt.sign(
+    { sub: userId, jti },
+    process.env.JWT_SECRET,
+    {
+      algorithm: 'HS256',
+      expiresIn: RTOKEN_EXPIRY,
+      issuer: 'AUTOMA',
+    }
+  );
+
+  // Generate CSRF token for this session
+  const csrfToken = crypto.randomBytes(24).toString('hex');
+  csrfSecrets[jti] = csrfToken;
+
+  // Store refresh token in memory
+  if (!validRefreshTokens[userId]) validRefreshTokens[userId] = [];
+  validRefreshTokens[userId].push(jti);
+
+  return { accessToken, refreshToken, jti, csrfToken };
+};
+
+export const isTokenBlacklisted = (token) => blackListedUserToken.includes(token);
+
+export const rotateRefreshToken = (userId, oldJti) => {
+  // remove old JTI
+  if (validRefreshTokens[userId]) {
+    validRefreshTokens[userId] = validRefreshTokens[userId].filter(j => j !== oldJti);
+  }
+};
+
+// ================= Controllers =================
+export const registerUser = async (req, res) => {
+  try {
+    await dbConnect();
+    const { username, email, password } = req.body;
+    if (!username || !email || !password)
+      return res.status(400).json({ message: 'All fields required', success: false });
+
+    if (await User.findOne({ username }))
+      return res.status(409).json({ message: 'Username already exists', success: false });
+
+    const newUser = new User({
+      username,
+      email,
+      password: bcrypt.hashSync(password, 10),
+    });
+
+    const savedUser = await newUser.save();
+    const { accessToken, refreshToken, csrfToken } = generateToken(savedUser._id);
+
+    return res.status(201)
+      .cookie('accessToken', accessToken, { httpOnly: true, secure: process.env.NODE_ENV === 'Production', sameSite: 'strict', maxAge: 15 * 60 * 1000, path: '/' })
+      .cookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'Production', sameSite: 'strict', maxAge: COOKIE_EXPIRY, path: '/' })
+      .cookie('csrfToken', csrfToken, { httpOnly: false, secure: process.env.NODE_ENV === 'Production', sameSite: 'strict', maxAge: COOKIE_EXPIRY, path: '/' })
+      .json({ message: 'User registered successfully', success: true });
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal server error', success: false, error: error.message || error });
+  }
+};
+
+export const loginUser = async (req, res) => {
+  try {
+    await dbConnect();
+    const { identifier, password } = req.body;
+    if (!identifier || !password)
+      return res.status(400).json({ message: 'All fields required', success: false });
+
+    const user = await User.findOne({ $or: [{ username: identifier }, { email: identifier }] });
+    if (!user) return res.status(404).json({ message: 'User not found', success: false });
+
+    if (!bcrypt.compareSync(password, user.password))
+      return res.status(401).json({ message: 'Invalid credentials', success: false });
+
+    const { accessToken, refreshToken, csrfToken } = generateToken(user._id);
+
+    return res.status(200)
+      .cookie('accessToken', accessToken, { httpOnly: true, secure: process.env.NODE_ENV === 'Production', sameSite: 'strict', maxAge: 15 * 60 * 1000, path: '/' })
+      .cookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'Production', sameSite: 'strict', maxAge: COOKIE_EXPIRY, path: '/' })
+      .cookie('csrfToken', csrfToken, { httpOnly: false, secure: process.env.NODE_ENV === 'Production', sameSite: 'strict', maxAge: COOKIE_EXPIRY, path: '/' })
+      .json({ message: 'Login successful', success: true });
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal server error', success: false, error: error.message || error });
+  }
+};
+
+export const logout = async (req, res) => {
+  try {
+    const { accessToken, refreshToken } = req.cookies;
+
+    if (accessToken) blackListedUserToken.push(accessToken);
+    if (refreshToken) {
+      const decoded = jwt.decode(refreshToken);
+      if (decoded?.sub) rotateRefreshToken(decoded.sub, decoded.jti);
+      blackListedUserToken.push(refreshToken);
+    }
+
+    return res.status(200)
+      .clearCookie('accessToken')
+      .clearCookie('refreshToken')
+      .clearCookie('csrfToken')
+      .json({ message: 'Logged out successfully', success: true });
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal server error', success: false, error: error.message || error });
+  }
+};
+
+export const returnMe = async (req, res) => {
+  try {
+    const { accessToken, refreshToken, csrfToken: csrfHeader } = req.cookies;
+
+    if (!accessToken) return res.status(401).json({ message: 'Access token missing', success: false });
+
+    let decoded;
+    try {
+      decoded = jwt.verify(accessToken, process.env.JWT_SECRET, { issuer: 'AUTOMA' });
+
+      if (isTokenBlacklisted(accessToken)) throw new Error('Token blacklisted');
+
+      // CSRF check for sensitive requests
+      if (req.method !== 'GET' && req.headers['x-csrf-token'] !== csrfSecrets[decoded.jti])
+        return res.status(403).json({ message: 'CSRF token mismatch', success: false });
+
+    } catch (err) {
+      if (err.name === 'TokenExpiredError') {
+        if (!refreshToken) return res.status(401).json({ message: 'Refresh token missing', success: false });
+
+        try {
+          const refreshDecoded = jwt.verify(refreshToken, process.env.JWT_SECRET, { issuer: 'AUTOMA' });
+          if (isTokenBlacklisted(refreshToken)) throw new Error('Refresh token blacklisted');
+
+          // Rotate refresh token
+          rotateRefreshToken(refreshDecoded.sub, refreshDecoded.jti);
+
+          const { accessToken: newAccessToken, refreshToken: newRefreshToken, csrfToken } = generateToken(refreshDecoded.sub);
+
+          res.cookie('accessToken', newAccessToken, { httpOnly: true, secure: process.env.NODE_ENV === 'Production', sameSite: 'strict', maxAge: 15 * 60 * 1000, path: '/' });
+          res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'Production', sameSite: 'strict', maxAge: COOKIE_EXPIRY, path: '/' });
+          res.cookie('csrfToken', csrfToken, { httpOnly: false, secure: process.env.NODE_ENV === 'Production', sameSite: 'strict', maxAge: COOKIE_EXPIRY, path: '/' });
+
+          decoded = jwt.decode(newAccessToken);
+        } catch {
+          return res.status(401).json({ message: 'Invalid refresh token', success: false });
+        }
+      } else {
+        return res.status(401).json({ message: 'Invalid access token', success: false });
+      }
+    }
+
+    await dbConnect();
+    const user = await User.findById(decoded.sub).select('-password');
+    if (!user) return res.status(404).json({ message: 'User not found', success: false });
+
+    return res.status(200).json({ message: 'User fetched', success: true, user });
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal server error', success: false, error: error.message || error });
+  }
+};

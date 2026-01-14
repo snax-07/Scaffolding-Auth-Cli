@@ -14,7 +14,8 @@ export default function RenderTemplate(path : string, context : CLIContext) : st
         const template = fs.readFileSync(path , "utf8");
         const renderedTemplate = ejs.render(template,{
             userModel : context.userModel,
-            ext : context.lang
+            ext : context.lang,
+            authType : context.authType
         });
         return renderedTemplate;
     } catch (error : any) {

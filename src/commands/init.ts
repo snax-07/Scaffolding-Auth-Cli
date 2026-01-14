@@ -38,6 +38,7 @@ export default async function INIT(options : commanderOption){
 
         const planBuild = BuildFilePlan(context , context.adapter?.mapAuth(context.authType as string) as GenerationPlan);
         const conflictsResolvedPlan =  await ConflictResolver(planBuild);
+        // console.log(conflictsResolvedPlan)
         Executor(conflictsResolvedPlan , context);
         console.log(chalk.whiteBright.bold("Auth Creation completed !!!"));
     } catch (error : any) {

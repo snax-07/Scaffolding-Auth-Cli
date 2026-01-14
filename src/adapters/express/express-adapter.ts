@@ -20,20 +20,24 @@ export class ExpressAdapter implements Adapter {
             plan =  {
                 files : [
                     {
-                        template : "express/controller/auth.controller",
-                        target : "controller/auth.controller"
+                        template : "jwt/express/config/dbConnect",
+                        target : "config/dbConnect"
                     },
                     {
-                        template : "express/middleware/auth.middleware",
-                        target : 'middleware/auth.middleware'
+                        template : "jwt/express/middleware/authMiddleware",
+                        target : "middleware/authMiddleware"
                     },
                     {
-                        template : "express/route/auth.route",
-                        target : "route/auth.route"
+                        template : "jwt/express/controllers/authController",
+                        target : "controllers/authControllers"
                     },
                     {
-                        template : "jwt/jwt",
-                        target : "utils/jwt"
+                        template : "jwt/express/models/userModel",
+                        target : "models/userModel"
+                    },
+                    {
+                        template : "jwt/express/routes/authRoutes",
+                        target : "routes/authRoutes"
                     }
                 ],
                 env : [
