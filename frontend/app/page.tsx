@@ -21,7 +21,7 @@ export default function LandingPage() {
           <div className="p-1.5 bg-black rounded flex items-center justify-center transition-transform group-hover:rotate-12">
             <Lock size={18} className="text-white" />
           </div>
-          <span className="text-xl font-bold tracking-tighter uppercase">Auth-CLI</span>
+          <span className="text-xl font-bold tracking-tighter uppercase">AUTOMA</span>
         </div>
         <div className="hidden md:flex gap-10 text-xs font-bold uppercase tracking-widest text-black/50">
           <a href="#features" className="hover:text-black transition-colors">Architecture</a>
@@ -61,12 +61,9 @@ export default function LandingPage() {
           </p>
 
           <div className="mt-12 flex flex-wrap justify-center gap-4">
-            <button className="px-10 py-4 bg-black text-white font-bold rounded-full shadow-2xl hover:shadow-black/20 transition-all flex items-center gap-3 active:scale-95">
-              Initialize Project <ArrowRight size={18} />
-            </button>
-            <button className="px-10 py-4 bg-transparent border-2 border-black text-black font-bold rounded-full hover:bg-black hover:text-white transition-all active:scale-95">
+            <Link href="/docs" className="px-10 py-4 bg-transparent border-2 border-black text-black font-bold rounded-full hover:bg-black hover:text-white transition-all active:scale-95">
               Read the Docs
-            </button>
+            </Link>
           </div>
         </motion.div>
 
@@ -89,7 +86,7 @@ export default function LandingPage() {
             <div className="p-8 text-left font-mono text-sm leading-relaxed text-black/80">
               <div className="flex gap-3 mb-2">
                 <span className="font-bold">user@dev:~$</span>
-                <span className="text-black font-bold">npx auth-cli init</span>
+                <span className="text-black font-bold">npx automa init --flag </span>
               </div>
               <div className="text-black/40 italic mb-4">// System Analysis Started...</div>
               <div className="flex items-center gap-2 mb-1">
@@ -137,7 +134,7 @@ export default function LandingPage() {
           <DocCard 
             icon={<Layers size={24} />}
             title="Middleware"
-            description="Pre-configured RBAC (Role Based Access Control) and route guarding middleware."
+            description="Pre-configured Rate limiting using in-storage mem and can be sacalable to redis."
           />
         </div>
       </section>
@@ -149,12 +146,16 @@ export default function LandingPage() {
           <p className="text-white/40 uppercase tracking-widest text-xs mt-4">Continuous evolution of the auth stack</p>
         </div>
         <div className="space-y-12">
-          <RoadmapItem step="01" status="Live" title="Express.js Core" desc="Full JS/TS support with JWT and Bcrypt integration." />
-          <RoadmapItem step="02" status="In Progress" title="Next.js Integration" desc="App Router support, Next-Auth compatibility, and Server Actions." />
+          <RoadmapItem step="01" status="Live" title="Express.js Core" desc="Full JS/TS support with JWT and Bcrypt integration and also intigrated the session handling usign express-session." />
+          <RoadmapItem step="02" status="In Progress" title="Next.js Integration" desc="App Router and page router support, Next-Auth compatibility, and Server Actions." />
           <RoadmapItem step="03" status="Upcoming" title="OAuth 2.0 Providers" desc="One-click social login injection for Google, GitHub, and Apple." />
           <RoadmapItem step="04" status="Planned" title="Multi-Tenant Auth" desc="Enterprise-grade organization and team management scaffolding." />
         </div>
       </section>
+
+      <footer className="flex justify-center align-center pb-10">
+        <p className="text-gray-600 underline">@2026 ALL rights reserved by SNAX-07</p>
+      </footer>
     </div>
   );
 }

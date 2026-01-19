@@ -13,6 +13,7 @@ import {
   ExternalLink,
   Github
 } from "lucide-react";
+import Link from "next/link";
 
 export default function ContributingPage() {
   return (
@@ -75,7 +76,7 @@ export default function ContributingPage() {
             <div className="bg-slate-50 border-2 border-black p-6 font-mono text-sm space-y-3 overflow-x-auto">
               <div className="flex gap-4">
                 <span className="text-black/30">1</span>
-                <span>git clone https://github.com/your-username/auth-scaffolder.git</span>
+                <span>git clone https://github.com/snax-07/Scaffolding-Auth-Cli.git</span>
               </div>
               <div className="flex gap-4">
                 <span className="text-black/30">2</span>
@@ -91,7 +92,7 @@ export default function ContributingPage() {
               </div>
               <div className="flex gap-4">
                 <span className="text-black/30">5</span>
-                <span>auth-scaffolder init</span>
+                <span>automa init</span>
               </div>
             </div>
           </section>
@@ -139,10 +140,9 @@ export default function ContributingPage() {
 
           {/* Footer of Docs */}
           <div className="pt-20 border-t-2 border-black flex items-center justify-between">
-            <p className="text-[10px] font-black uppercase tracking-widest text-black/40">© 2026 Auth-CLI Engine</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-black/40">© 2026 AUTOMA Engine</p>
             <div className="flex gap-6">
-              <Github size={20} className="hover:scale-110 transition-transform cursor-pointer" />
-              <ExternalLink size={20} className="hover:scale-110 transition-transform cursor-pointer" />
+              <Link href="https://github.com/snax-07/Scaffolding-Auth-Cli"><Github size={20} className="hover:scale-110 transition-transform cursor-pointer" /></Link>
             </div>
           </div>
 

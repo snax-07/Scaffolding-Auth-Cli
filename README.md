@@ -15,7 +15,6 @@ A **framework-aware authentication scaffolding CLI** that generates **JWT or Ses
 - 🛠 JS & TS templates
 - 🧱 Clean separation: middleware, controllers, routes, utils
 - 🧯 Conflict-safe file generation
-- 🧬 Dynamic model support (`User`, `Student`, etc.)
 - 📦 Auto dependency installation (optional)
 
 ---
@@ -25,8 +24,8 @@ A **framework-aware authentication scaffolding CLI** that generates **JWT or Ses
 | Framework | Router Support | Status |
 |---------|----------------|--------|
 | Express | Classic | ✅ |
-| Next.js | App Router | ✅ |
-| Next.js | Pages Router | ✅ |
+| Next.js | App Router | ⏱️ |
+| Next.js | Pages Router | ⏱️ |
 
 ---
 
