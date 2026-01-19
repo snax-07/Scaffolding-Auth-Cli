@@ -32,4 +32,4 @@ A **framework-aware authentication scaffolding CLI** that generates **JWT or Ses
 ## 🛠 Installation
 
 ```bash
-npm install -g automa-auth
+npm install -g automa
