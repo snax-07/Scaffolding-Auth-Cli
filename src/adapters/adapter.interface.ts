@@ -21,6 +21,7 @@ export interface ValidationResult {
 
 export interface Adapter {
   framework: string;
+  routing ?: string
 
   detect(): boolean;
 

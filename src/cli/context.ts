@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import type { Adapter } from "../adapters/adapter.interface.ts";
 import { ExpressAdapter } from "../adapters/express/express-adapter.ts";
+import { NextAdapter } from "../adapters/nextjs/next-adapter.ts";
 
 
 export interface CLIContext {
@@ -15,7 +16,7 @@ export type AdapterConstructor = new () => Adapter;
 
 const adapterRegistry: Record<string, AdapterConstructor> = {
   express: ExpressAdapter,
-//   next : NextAdapter,
+  next : NextAdapter,
 };
 
 export class ContextBuilder {
@@ -68,6 +69,7 @@ export class ContextBuilder {
         const adapter = adapterRegistry[framework];
         if(!adapter){
             console.log(chalk.yellow("🚫 Framework is not supported by automa !!!"));
+            console.log(chalk.gray("Please read the official documentaion or github readme for using this tool !!!"));
             process.exit(0);
         }
 

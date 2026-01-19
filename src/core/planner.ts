@@ -21,6 +21,16 @@ export function BuildFilePlan(
         throw new Error("Project root is not defined !!!")
     };
 
+    if(context.authType === "session" && context.lang === "ts"){
+        plan.files.push({
+            template : "session/express/types/express-session",
+            target : "types/express-session"
+        });
+        plan.files.push({
+            template : "session/express/types/express",
+            target : "types/express"
+        })
+    }
     const SRC_ROOT = path.join(projectRoot , "src");
     return plan.files.map(file => {
         const templatePath = path.join(TEMPLATE_ROOT  , context.lang as string, `${file.template}.${context.lang}`);

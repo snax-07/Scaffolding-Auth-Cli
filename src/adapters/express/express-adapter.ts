@@ -5,6 +5,9 @@ import fs from 'fs-extra'
 export class ExpressAdapter implements Adapter {
     framework: string = "express";
 
+    /*THIS ACT LIKE SIMPLE CHECK WHICH CHACK THAT GIVEN FRAMEWORK IS VALID OR NOT BY CHECKING THEIR INSTALLED DEPENDENCIES FROM PCAKAGE.JSON AND THIS ENSURE THAT 
+        BEFORE CREATING THE FILE THAT DEV ENV IS VALID FOR THAT FREAMEWORK
+    */
     detect(): boolean {
         const projectRoot = process.cwd();
         const json = fs.readJSONSync(path.join(projectRoot , "package.json") , "utf8");
@@ -49,7 +52,35 @@ export class ExpressAdapter implements Adapter {
                 ]
             }
         }else if(authType = "session"){
-
+            plan = {
+                files : [
+                    {
+                        template : "session/express/config/dbConnect",
+                        target : "config/dbConnect"
+                    },
+                    {
+                        template : "session/express/controllers/authController",
+                        target : "controllers/authController"
+                    },
+                    {
+                        template : "session/express/routes/authRoute",
+                        target : "routes/authRoute"
+                    },
+                    {
+                        template : "session/express/middleware/authMiddleware",
+                        target : "middleware/authMiddleware"
+                    },
+                    {
+                        template : "session/express/models/userModel",
+                        target : "models/userModel"
+                    }
+                ],
+                env : [],
+                hooks : ["app" , "index" , "server"],
+                warnings : [
+                    "Please read official docs for any confusion or reach out the dev for this query 😊 !!!!"
+                ]
+            }
         }
         return plan as GenerationPlan
     }
@@ -57,7 +88,7 @@ export class ExpressAdapter implements Adapter {
     validate(plan: GenerationPlan , lang : "js" | "ts"): ValidationResult {
         const projectRoot = process.cwd();
         for(const hook of plan.hooks){
-            if(fs.existsSync(path.join(projectRoot ,  `${hook}.${lang}`))){
+            if(fs.existsSync(path.join(projectRoot ,  `${hook}.js`))){
                 return {
                     valid : true,
                     warnings : [],

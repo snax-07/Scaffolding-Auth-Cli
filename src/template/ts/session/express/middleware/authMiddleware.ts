@@ -3,8 +3,9 @@ import User from "../../../jwt/express/models/userModel.js";
 import {redis} from '../index.ts'
 import type { Request , Response , NextFunction } from "express";
 
-const demo = redis
-export const authGuard = async (req : Request, res : Response, next : NextFunction) => {
+
+
+export const authGuard = async (req : Request , res : Response, next : NextFunction) => {
   try {
     if (!redis.isOpen) {
       return res.status(503).json({
@@ -20,7 +21,7 @@ export const authGuard = async (req : Request, res : Response, next : NextFuncti
         });
     }
 
-    if(!req.session.meta.ua as string  !== req.headers["user-agent"] as string){
+    if(req.session.meta && req.session.meta.ua as string  !== req.headers["user-agent"] as string){
         return res.status(401).json({
             message : "Session HI-JACKING detected !!!",
             success : false
@@ -38,7 +39,7 @@ export const authGuard = async (req : Request, res : Response, next : NextFuncti
 
     req.session.touch();
 
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select("-password");
     if (!user) {
       await destroySession(req);
       return res.status(401).json({
@@ -60,11 +61,11 @@ export const authGuard = async (req : Request, res : Response, next : NextFuncti
 };
 
 // Helper function to destroy session safely
-async function destroySession(req) {
+async function destroySession(req : Request)  {
   return new Promise((resolve) => {
     req.session.destroy((err) => {
       if (err) console.error("Error destroying session:", err);
-      resolve();
+      resolve(0);
     });
   });
 }

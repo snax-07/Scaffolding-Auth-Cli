@@ -1,14 +1,17 @@
 import express from "express";
 import session from "express-session";
-import RedisStore from "connect-redis";
+import {RedisStore} from "connect-redis";
 import csrf from 'csrf';
 import Redis from "ioredis";
 import cookieParser from "cookie-parser";
 import cors from 'cors'
+import authRoutes from './routes/authRoute.js'
+import dotenv from 'dotenv'
 
+dotenv.config();
 const app = express();
 export const redis = new Redis();
-const csrfProtection = csrf({
+const csrfProtection = new csrf({
   cookie : false //Use session storage rather cookie session
 }) 
 
@@ -34,7 +37,7 @@ app.use(
   })
 );
 
-app.use("/auth" , )
+app.use("/auth" , authRoutes)
 
 app.listen(8000  , () => {
     console.log("Server is running on 8000");

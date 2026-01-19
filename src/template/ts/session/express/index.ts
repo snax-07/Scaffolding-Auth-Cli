@@ -1,6 +1,6 @@
 import express from "express";
 import session from "express-session";
-import RedisStore from "connect-redis";
+import {RedisStore} from "connect-redis";
 import csrf from 'csrf';
 import Redis from "ioredis";
 import cookieParser from "cookie-parser";
@@ -8,9 +8,9 @@ import cors from 'cors'
 
 const app = express();
 export const redis = new Redis();
-const csrfProtection = csrf({
-  cookie : false //Use session storage rather cookie session
-}) 
+const csrfProtection = new csrf({
+  secretLength : 20
+})
 
 app.use(express.json());
 app.use(cors({

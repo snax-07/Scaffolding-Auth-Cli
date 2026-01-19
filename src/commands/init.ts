@@ -4,6 +4,7 @@ import { BuildFilePlan } from "../core/planner.ts";
 import type { GenerationPlan } from "../adapters/adapter.interface.ts";
 import ConflictResolver from "../core/confilict-resolver.ts";
 import Executor from "../core/executor.ts";
+import inquirer from "inquirer";
 
 export type commanderOption = {
     framework :  string,
@@ -23,12 +24,33 @@ export default async function INIT(options : commanderOption){
         contextBUilder.setAuthType(options.auth as string);
         contextBUilder.setUserModel(options.usermodel as string);
         contextBUilder.setProjectRoot(projectRoot as string);
+
         const context = contextBUilder.build();
+        if(options.framework === 'next'){
+            //THIS WILL MAKE SURE OF THAT USER PROJCT WILL NOT BREAK DUE TO ROUTING METHODS DIFF
+            const {routingMethod}  = await inquirer.prompt([
+                {
+                    type : "select",
+                    name : "routingMethod",
+                    message : "Select routing method .    ",
+                    choices : ["app" , "page"]
+                }
+            ]);
+
+            if(context.adapter){
+                context.adapter.routing = routingMethod as string;
+            }else{
+                console.log(chalk.redBright("🚫 Adapter is not found !!!!"));
+                process.exit(0);
+            }
+        }
+
+
+        
 
 
         //BEFORE PROCESSING THE ANY OTHER CASE JUST VALIDATE THE SERVER OR ROOT FILE IS EXIST IN SRCROOT
         const isValid = context.adapter?.validate(context.adapter.mapAuth(context.authType as string) , context.lang as "ts" | "js").valid;
-        console.log(isValid)
         if(!isValid){
             console.log(chalk.red("💀 Server main file is not found !!!"));
             console.log(chalk.gray("Make sure that server entry point should be defined so make sure that backend entry point should be present which named as the APP , SERVER , INDEX."));
@@ -38,7 +60,7 @@ export default async function INIT(options : commanderOption){
 
         const planBuild = BuildFilePlan(context , context.adapter?.mapAuth(context.authType as string) as GenerationPlan);
         const conflictsResolvedPlan =  await ConflictResolver(planBuild);
-        // console.log(conflictsResolvedPlan)
+        console.log(conflictsResolvedPlan)
         Executor(conflictsResolvedPlan , context);
         console.log(chalk.whiteBright.bold("Auth Creation completed !!!"));
     } catch (error : any) {

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import User from "../../../jwt/express/models/userModel.js";
+import User from '../models/userModel.js'
 import { redis } from "../index.js";
 
 export const authGuard = async (req, res, next) => {

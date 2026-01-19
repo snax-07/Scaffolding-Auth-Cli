@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import User from "../../../jwt/express/models/userModel.js";
+import User from '../models/userModel.js'
 import dbConnect from "../config/dbConnect.js";
 import bcrypt from 'bcryptjs'
 
@@ -114,7 +114,7 @@ const loginUser = async (req , res) => {
             };
             
             //THIS IS MAINLY USED FOR STOLE SID PROTECTION LIKE SESSION HI-JACKING
-            req.session.meta.ua === req.headers["user-agent"];
+            req.session.meta.ua = req.headers["user-agent"];
             
             req.session.save((err) => {
                 if (err) {
