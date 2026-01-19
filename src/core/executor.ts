@@ -23,7 +23,7 @@ export default async function Executor(
         if(context.authType === "session"){
             const content =fs.readFileSync(path.join(path.resolve(__dirname , `../../src/template`) , `${context.lang}/${context.authType}/${context.framework}` , `index.${context.lang}`)).toString();
             if(!fs.existsSync(path.join(context.projectRoot as string ,  "index.js"))){
-                WriteFile(content , path.join(context.projectRoot as string , "src" , "index.js"));
+                WriteFile(content , path.join(context.projectRoot as string ,  "index.js"));
             }else{
                 fs.appendFileSync(path.join(context.projectRoot as string , "src" , "index.js") , content);
             }
