@@ -25,8 +25,9 @@ function IntializeAutoma(){
 
     program
     .command("add")
-    .option("--mod <string>" , "This is used for adding the Specific module in the code and make sure that it is compatible !!!")
-    .option("--lang <string>" , "This is used to define the prototype language code !!!")
+    .option("--psr-lang <string>" , "It hold the value for type of the password reset module with specific typeof language...")
+    .option("--msd-lang <string>" , "It hold the value for type of the multi factor module with specific typeof language...")
+    .option("--msd-sender <string>" , "It hold the value for type of the multi factor module sender type ...") 
     .action(ADD)
 
     program.parse();
