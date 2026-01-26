@@ -21,6 +21,7 @@ import nodemailer from 'nodemailer'
  *  context: { name: "John", code: "123456" }
  * }); 
  */
+
 async function sendMail({ to, subject, template, context = {} }) {
   if (!to || !subject || !template) {
     throw new Error('to, subject, and template are required')
@@ -48,7 +49,7 @@ async function sendMail({ to, subject, template, context = {} }) {
 
 /**
  * Ultra-light template compiler
- * Replaces {{key}} with context values
+ * Replaces {{key}} with context values this make sure the consistency between the code and comment
  */
 function compileTemplate(template, context) {
   return template.replace(/{{\s*(\w+)\s*}}/g, (_, key) => {

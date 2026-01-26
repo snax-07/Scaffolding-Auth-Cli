@@ -40,6 +40,14 @@ const CSRF_COOKIE_OPTIONS = {
  * - Enforces CSRF
  * - Attaches user to req
  */
+
+/**
+ * THIS IS MIDDLEMAN WHO CHECKS FOR THE ACTIVE SESSION AND CSRF TOKEN FOR AVOIDING THE SESSION HI-JACKING
+ * @param {*} req 
+ * @param {*} res 
+ * @returns {ResponseObject} return the response object and fetched by frontend
+ * @throws {ErrorResponseObject}
+ */
 export const authGuard = async (req, res, next) => {
   try {
     const accessToken = req.cookies?.accessToken;

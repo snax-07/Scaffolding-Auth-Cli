@@ -43,7 +43,7 @@ async function sendMail({ to, subject, template, context = {} } : mailOptions) :
     }
   })
 
-    const  html = compileTemplate(template , context);
+    const html = compileTemplate(template , context);
   return transporter.sendMail({
     from: process.env.SMTP_FROM,
     to,

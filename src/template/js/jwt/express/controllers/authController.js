@@ -4,6 +4,11 @@ import dbConnect from '../config/dbConnect.js';
 import User from '../models/userModel.js';
 import bcrypt from 'bcryptjs';
 
+
+/**
+ * This is basically controller whic are holding pre-defined controller logic for implementation
+ * and following are global var for the functional use
+ */
 const TOKEN_EXPIRY = process.env.TOKEN_EXPIRY || '15m';
 const RTOKEN_EXPIRY = process.env.RTOKEN_EXPIRY || '7d';
 const COOKIE_EXPIRY = process.env.COOKIE_EXPIRY || 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -15,6 +20,11 @@ export const csrfSecrets = {}; // key = session/jti, value = CSRF token
 
 // ================= Helper Functions =================
 
+/**
+ * 
+ * @param {*} userId 
+ * @returns {accessToken , refreshToken}
+ */
 export const generateToken = (userId) => {
   const jti = crypto.randomUUID();
 
@@ -58,7 +68,15 @@ export const rotateRefreshToken = (userId, oldJti) => {
   }
 };
 
-// ================= Controllers =================
+// ================= Controllers ================= //
+
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @returns {ResponseObject} return the response object and fetched by frontend
+ * @throws {ErrorResponseObject}
+ */
 export const registerUser = async (req, res) => {
   try {
     await dbConnect();
@@ -88,6 +106,13 @@ export const registerUser = async (req, res) => {
   }
 };
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @returns {ResponseObject} return the response object and fetched by frontend
+ * @throws {ErrorResponseObject}
+ */
 export const loginUser = async (req, res) => {
   try {
     await dbConnect();
@@ -113,6 +138,14 @@ export const loginUser = async (req, res) => {
   }
 };
 
+
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @returns {ResponseObject} return the response object and fetched by frontend
+ * @throws {ErrorResponseObject}
+ */
 export const logout = async (req, res) => {
   try {
     const { accessToken, refreshToken } = req.cookies;
@@ -134,6 +167,13 @@ export const logout = async (req, res) => {
   }
 };
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @returns {ResponseObject} return the response object and fetched by frontend
+ * @throws {ErrorResponseObject}
+ */
 export const returnMe = async (req, res) => {
   try {
     const { accessToken, refreshToken, csrfToken: csrfHeader } = req.cookies;

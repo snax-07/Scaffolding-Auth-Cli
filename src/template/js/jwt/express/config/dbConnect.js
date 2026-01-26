@@ -2,6 +2,11 @@ import mongoose from 'mongoose'
 
 const isConncted = {};
 
+/** 
+ * This function is used to connnect the db with actual database local or deployed cluster
+ * Hold the persistence context of the db connection
+*/
+
 export default async function dbConnect() {
     try {
         if(isConncted.connected){
