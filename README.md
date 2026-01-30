@@ -55,7 +55,7 @@ automa init --flag <value>
 - hold the framework for the context while if user not provided the framework it will detect automatic and assume the express as their default working framework.
 
 ```
-    --lang <value>
+--lang <value>
 ```
 - hold the language for whole generation context and make sure the language compatible with the user working env and this is also handled for un-passed argument which tell that default lang is JS and run the context.
 

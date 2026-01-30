@@ -8,6 +8,14 @@ import bcrypt from 'bcryptjs'
 export const blockListedSID = [];
 // ================CONTROLLERS================//
 
+
+/**
+ * This function. take user model required feilds and register the user
+ * @param {*} req 
+ * @param {*} res 
+ * @returns {Response} send the response with status code
+ * @throws {Error}
+*/
 const registerUser = async(req , res)=> {
     try {
         await dbConnect()
@@ -71,6 +79,14 @@ const registerUser = async(req , res)=> {
     }
 };
 
+
+/**
+ * This function take params and used for login the user using session based door login
+ * @param {*} req 
+ * @param {*} res 
+ * @returns {Response} send the response with status code
+ * @throws {Error}
+ */
 const loginUser = async (req , res) => {
     try {
         
@@ -138,6 +154,14 @@ const loginUser = async (req , res) => {
     }
 }
 
+
+/**
+ * This function take params and used for logout the user and delete the session cookie
+ * @param {*} req 
+ * @param {*} res 
+ * @returns {Response} send the response with status code
+ * @throws {Error}
+ */
 const logout = async (req , res) => {
     try {
         if(!req.cookies.SID){
@@ -183,6 +207,14 @@ const logout = async (req , res) => {
     }
 }
 
+
+/**
+ * This function take the session in use and return the user from DB according to session id
+ * @param {*} req 
+ * @param {*} res 
+ * @returns {Response} send the response with status code
+ * @throws {Error}
+ */
 const returnMe = async (req , res) => {
     try {
         await dbConnect();

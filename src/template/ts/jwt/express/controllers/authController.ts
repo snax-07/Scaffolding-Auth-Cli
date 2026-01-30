@@ -6,6 +6,7 @@ import User from '../models/userModel.js';
 import bcrypt from 'bcryptjs';
 import type { Request , Response } from 'express';
 
+
 export const TOKEN_EXPIRY = process.env.TOKEN_EXPIRY ?? '15m';
 export const RTOKEN_EXPIRY = process.env.RTOKEN_EXPIRY ?? '7d';
 const COOKIE_EXPIRY = process.env.COOKIE_EXPIRY || 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -61,6 +62,12 @@ export const rotateRefreshToken = (userId : string, oldJti : string) => {
 
 // ================= Controllers =================
 
+/**
+ * THIS FUNCTION USED FOR REGISTERING THE USER IN AND AUTO LOGIN FOR SEAMLESS EXP
+ * @param req 
+ * @param res 
+ * @returns {ServerResponse}
+ */
 export const registerUser = async (
     req : Request<{} , {} , {username : string , email : string , password : string}>, res : Response
 ) => {
@@ -92,6 +99,14 @@ export const registerUser = async (
   }
 };
 
+
+
+/**
+ * THIS FUNCTION USED FOR LOGIN THE USER IN 
+ * @param req 
+ * @param res 
+ * @returns {ServerResponse}
+ */
 export const loginUser = async (req : Request<{} , {} ,{identifier : string , password : string}>, res : Response) => {
   try {
     await dbConnect();
@@ -117,6 +132,14 @@ export const loginUser = async (req : Request<{} , {} ,{identifier : string , pa
   }
 };
 
+
+
+/**
+ * THIS FUNCTION USED FOR LOGOUT THE USER AND DELETE THE SESSION COOKIE
+ * @param req 
+ * @param res 
+ * @returns {ServerResponse}
+ */
 export const logout = async (req : Request, res : Response) => {
   try {
     const { accessToken, refreshToken } = req.cookies;
@@ -138,6 +161,14 @@ export const logout = async (req : Request, res : Response) => {
   }
 };
 
+
+
+/**
+ * THIS FUNCTION USED FOR RETURNING THE EXIST USER FROM THE SESSION DATA AND MAKE SURE THAT USER MATCHES THE SESSION ENCRYPTION
+ * @param req 
+ * @param res 
+ * @returns {ServerResponse}
+ */
 export const returnMe = async (req : Request, res : Response) => {
   try {
     const { accessToken, refreshToken, csrfToken: csrfHeader } = req.cookies;

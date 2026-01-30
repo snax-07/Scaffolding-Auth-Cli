@@ -35,6 +35,7 @@ const CSRF_COOKIE_OPTIONS : CookieOptions = {
 };
 interface LocalAuthGenericUser{
     user : {
+        _id : string,
         username : string,
         email : string
     },
