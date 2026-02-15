@@ -19,12 +19,12 @@ export default async function INIT(options : commanderOption){
         const projectRoot = process.cwd();
 
         const contextBUilder = new ContextBuilder();
-        contextBUilder.setFramework(options.framework);
+        contextBUilder.setFramework(options.framework || "" as string);
         contextBUilder.setLanguage(options.lang as "ts" | "js");
         contextBUilder.setAuthType(options.auth as string);
         contextBUilder.setUserModel(options.usermodel as string);
         contextBUilder.setProjectRoot(projectRoot as string);
-
+        
         const context = contextBUilder.build();
         if(options.framework === 'next'){
             //THIS WILL MAKE SURE OF THAT USER PROJCT WILL NOT BREAK DUE TO ROUTING METHODS DIFF
@@ -36,7 +36,7 @@ export default async function INIT(options : commanderOption){
                     choices : ["app" , "page"]
                 }
             ]);
-
+            
             if(context.adapter){
                 context.adapter.routing = routingMethod as string;
             }else{
